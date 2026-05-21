@@ -1,0 +1,22 @@
+# Node
+node_modules/
+dist/
+backend-node/dist/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Java
+backend-java/target/
+*.jar
+*.class
+
+# Docker
+postgres_data/
+
+# OS
+.DS_Store
+Thumbs.db

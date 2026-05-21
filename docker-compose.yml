@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: coekipia-db
+    environment:
+      POSTGRES_USER: coekipia
+      POSTGRES_PASSWORD: coekipia
+      POSTGRES_DB: coekipia
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend-node:
+    build: ./backend-node
+    container_name: coekipia-node
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://coekipia:coekipia@postgres:5432/coekipia
+    depends_on:
+      - postgres
+
+  backend-python:
+    build: ./backend-python
+    container_name: coekipia-python
+    ports:
+      - "3002:3002"
+    environment:
+      DATABASE_URL: postgresql://coekipia:coekipia@postgres:5432/coekipia
+    depends_on:
+      - postgres
+
+  backend-java:
+    build: ./backend-java
+    container_name: coekipia-java
+    ports:
+      - "3003:3003"
+    environment:
+      DATABASE_URL: postgresql://coekipia:coekipia@postgres:5432/coekipia
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
