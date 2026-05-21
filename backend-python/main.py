@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Literal
+from typing import Literal, Optional
 import psycopg2
 import os
 
@@ -14,7 +14,7 @@ app.add_middleware(
 )
 
 FilterableKey = Literal[
-    "first_name", "last_name", "department", 
+    "first_name", "last_name", "department",
     "role", "salary", "is_active"
 ]
 
@@ -32,17 +32,20 @@ def get_conn():
 
 @app.get("/employees", response_model=list[Employee])
 def filter_and_sort(
-    filterKey: FilterableKey = Query(...),
-    filterValue: str = Query(...),
-    sortKey: FilterableKey = Query(...)
+    filterKey: Optional[FilterableKey] = Query(None),
+    filterValue: Optional[str] = Query(None),
+    sortKey: Optional[FilterableKey] = Query(None)
 ):
     try:
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(
-            f"SELECT * FROM employees WHERE {filterKey} = %s ORDER BY {sortKey}",
-            (filterValue,)
-        )
+        if filterKey and filterValue is not None and filterValue != "" and sortKey:
+            cur.execute(
+                f"SELECT * FROM employees WHERE {filterKey} = %s ORDER BY {sortKey}",
+                (filterValue,)
+            )
+        else:
+            cur.execute("SELECT * FROM employees ORDER BY id")
         rows = cur.fetchall()
         cols = ["id", "first_name", "last_name", "department", "role", "salary", "is_active"]
         return [Employee(**dict(zip(cols, row))) for row in rows]

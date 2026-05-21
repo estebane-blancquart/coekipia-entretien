@@ -13,16 +13,11 @@ app.use((req, res, next) => {
 app.get('/employees', async (req, res) => {
   const { filterKey, filterValue, sortKey } = req.query;
 
-  if (!filterKey || !filterValue || !sortKey) {
-    res.status(400).json({ error: 'filterKey, filterValue and sortKey are required' });
-    return;
-  }
-
   try {
     const employees = await filterAndSort(
-      filterKey as FilterableKey,
-      filterValue as string,
-      sortKey as FilterableKey
+      filterKey as FilterableKey | undefined,
+      filterValue as string | undefined,
+      sortKey as FilterableKey | undefined
     );
     res.json(employees);
   } catch (err) {

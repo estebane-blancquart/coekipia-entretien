@@ -17,9 +17,9 @@ public class EmployeeController {
 
     @GetMapping("/employees")
     public ResponseEntity<?> getEmployees(
-        @RequestParam String filterKey,
-        @RequestParam String filterValue,
-        @RequestParam String sortKey
+        @RequestParam(required = false) String filterKey,
+        @RequestParam(required = false) String filterValue,
+        @RequestParam(required = false) String sortKey
     ) {
         try {
             List<Employee> employees = service.filterAndSort(filterKey, filterValue, sortKey);
